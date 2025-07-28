@@ -18,10 +18,10 @@ struct ContentView: View {
     var body: some View {
         
         TabView(selection: $selectedTab) {
-            DefaultView()
+            StatisticsView()
                 .tabItem {
-                    Image(systemName: "house")
-                    Text("Home")
+                    Image(systemName: "chart.bar")
+                    Text("Stats")
                 }.tag(0)
             
            

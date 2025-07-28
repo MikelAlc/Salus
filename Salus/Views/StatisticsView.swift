@@ -9,6 +9,16 @@ import SwiftUI
 
 struct StatisticsView: View {
     var body: some View {
-        Text("TEST")
+        VStack{
+            LazyVGrid(columns: Array(repeating: GridItem(spacing:15), count: 2)){
+                ActivityCardView()
+                ActivityCardView()
+            }
+        }
+        .padding(.horizontal)
     }
+}
+
+#Preview {
+    StatisticsView()
 }
