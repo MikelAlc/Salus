@@ -1,8 +1,10 @@
 //
 //  MessageRowView.swift
-//  Insight
+//  Salus
 //
-//  Created by Mikel on 12/7/24.
+//  Created by Mikel on 8/4/24.
+//  Based on Tutorial by Xcoding by ALfian
+//  https://www.youtube.com/watch?v=PLEgTCT20zU&list=PLuecTl5TrGws7XyrBor8T0DoboJk6PBW0
 //
 
 import SwiftUI
@@ -14,11 +16,11 @@ struct MessageRowView: View {
     
     var body: some View {
         VStack(spacing:0){
-            messageRow(text: message.sendText, image: message.sendImage, bgColor: colorScheme == .light ? .white : Color(red:52/255,green:53/255,blue:65/255,opacity:0.5))
+            messageRow(text: message.sendText, image: message.sendImage, bgColor: Color("Background"))
             
             if let text = message.responseText {
                 Divider()
-                messageRow(text:message.responseText ?? "", image:message.responseImage  , bgColor:  colorScheme == .light ? .white : Color(red:52/255,green:53/255,blue:65/255,opacity:1),responseError: message.responseError, showDotLoading: message.isInteractingWithChatGPT)
+                messageRow(text:message.responseText ?? "", image:message.responseImage  , bgColor:  Color("Background"), responseError: message.responseError, showDotLoading: message.isInteractingWithChatGPT)
                 Divider()
             }
         
@@ -82,13 +84,13 @@ struct MessageRowView_Previews: PreviewProvider {
     static let message = MessageRow(
         isInteractingWithChatGPT:  true, sendImage: "Pug",
         sendText: "What is SwiftUI?",
-        responseImage: "Insight",
+        responseImage: "Salus",
         responseText: "It is a tool.")
     
     static let message2 = MessageRow(
         isInteractingWithChatGPT: false, sendImage: "Pug",
         sendText: "What is SwiftUI?",
-        responseImage: "Insight",
+        responseImage: "Salus",
         responseText: "",
         responseError: "ChatGPT is currently not available")
     

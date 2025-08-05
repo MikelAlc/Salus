@@ -1,8 +1,10 @@
 //
 //  ChatGPTAPIModels.swift
-//  Insight
+//  Salus
 //
-//  Created by Mikel on 12/6/24.
+//  Created by MikelAlc on 8/4/24.
+//  Based on Tutorial by Xcoding by ALfian
+//  https://www.youtube.com/watch?v=PLEgTCT20zU&list=PLuecTl5TrGws7XyrBor8T0DoboJk6PBW0
 //
 
 import Foundation

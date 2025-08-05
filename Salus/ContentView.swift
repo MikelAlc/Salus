@@ -5,24 +5,43 @@
 //  Created by MikelAlc on 7/16/25.
 //
 
+import AVFoundation
 import SwiftUI
 import SwiftData
 import UserNotifications
 
 struct ContentView: View {
+    
+    //ChatView
+    @StateObject private var modelView = ModelView(api: ChatGPTAPI(apiKey: Secrets.apiKey))
+    private let speechSynth = AVSpeechSynthesizer()
+    @State private var isTextToSpeechEnabled = false
+    
+    //StatsView
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var manager: HealthManager
     @Query private var items: [Item]
+    
 
     @State private var selectedTab = 0
 
     var body: some View {
         
         TabView(selection: $selectedTab) {
+            NavigationStack{
+                ChatView(modelView: modelView, isTextToSpeechEnabled: $isTextToSpeechEnabled)
+            }
+                .tabItem(){
+                    Image(systemName: "ellipsis.message.fill")
+                    Text("Chat")
+                }.tag(0)
+            
             StatisticsView()
                 .tabItem {
                     Image(systemName: "chart.bar")
                     Text("Stats")
-                }.tag(0)
+                }.tag(1)
+                .environmentObject(manager)
             
            
             NavigationSplitView {
@@ -59,7 +78,7 @@ struct ContentView: View {
             }.tabItem {
                 Image(systemName:"bell")
                 Text("Notifs")
-            }.tag(1)
+            }.tag(2)
         }
     }
 

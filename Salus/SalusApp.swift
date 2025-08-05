@@ -22,11 +22,14 @@ struct SalusApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+    
+    @State var manager = HealthManager()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
         .modelContainer(sharedModelContainer)
+        .environmentObject(manager)
     }
 }

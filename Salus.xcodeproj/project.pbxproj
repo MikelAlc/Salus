@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9706CAFD2E4179A60023B97A /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 9706CAFB2E41799A0023B97A /* Secrets.xcconfig */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		97FF5FAA2E28611E00EFCBA1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,14 +28,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9706CAFB2E41799A0023B97A /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		97FF5F972E28611C00EFCBA1 /* Salus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Salus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97FF5FA92E28611E00EFCBA1 /* SalusTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SalusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		97FF5FB32E28611E00EFCBA1 /* SalusUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SalusUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		9706CAFF2E417E1D0023B97A /* Exceptions for "Salus" folder in "Salus" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 97FF5F962E28611C00EFCBA1 /* Salus */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		97FF5F992E28611C00EFCBA1 /* Salus */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				9706CAFF2E417E1D0023B97A /* Exceptions for "Salus" folder in "Salus" target */,
+			);
 			path = Salus;
 			sourceTree = "<group>";
 		};
@@ -79,6 +97,7 @@
 				97FF5FAC2E28611E00EFCBA1 /* SalusTests */,
 				97FF5FB62E28611E00EFCBA1 /* SalusUITests */,
 				97FF5F982E28611C00EFCBA1 /* Products */,
+				9706CAFB2E41799A0023B97A /* Secrets.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -212,6 +231,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9706CAFD2E4179A60023B97A /* Secrets.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,6 +291,7 @@
 /* Begin XCBuildConfiguration section */
 		97FF5FBB2E28611E00EFCBA1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9706CAFB2E41799A0023B97A /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -334,6 +355,7 @@
 		};
 		97FF5FBC2E28611E00EFCBA1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9706CAFB2E41799A0023B97A /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -393,12 +415,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Salus/Salus.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Salus/Preview Content\"";
 				DEVELOPMENT_TEAM = ULG8WAV5L2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Salus/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please Allow Access for full functionality";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -422,12 +447,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Salus/Salus.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Salus/Preview Content\"";
 				DEVELOPMENT_TEAM = ULG8WAV5L2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Salus/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please Allow Access for full functionality";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

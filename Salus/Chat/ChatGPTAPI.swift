@@ -1,8 +1,10 @@
-//  Made with: https://www.youtube.com/watch?v=PLEgTCT20zU&list=PLuecTl5TrGws7XyrBor8T0DoboJk6PBW0
-//  ChatGPTAPI.swift
-//  Insight
 //
-//  Created by Mikel on 12/6/24.
+//  ChatGPTAPI.swift
+//  Salus
+//
+//  Created by MikelAlc on 8/4/25.
+//  Based on Tutorial by Xcoding by ALfian
+//  https://www.youtube.com/watch?v=PLEgTCT20zU&list=PLuecTl5TrGws7XyrBor8T0DoboJk6PBW0
 //
 
 import Foundation
@@ -38,12 +40,9 @@ class ChatGPTAPI {
         ]
     }
     
-    /*
-     You are Insight, a large language model that educates the user about eye diseases and eye health. Answer with max 256 tokens. When you get a diagnosis, if it is cataracts say how you can fix it. If a language is mentioned responded in that language.\n\n\n
-     */
 
     
-    init(apiKey: String, model: String = "gpt-4o", systemPrompt: String = "You are HealthBot, a large language model that educates the user about health and how to lose weight. Answer with max 256 tokens. Isf a language is mentioned responded in that language.\n\n\n", temperature: Double = 0.1) {
+    init(apiKey: String, model: String = "gpt-4o", systemPrompt: String = "You are Salus, a large language model that educates the user about health and how to lose weight. Answer with max 256 tokens. If a language is mentioned respond in that language.\n\n\n", temperature: Double = 0.1) {
         self.apiKey = apiKey
         self.model = model
         self.systemMessage = .init(role:"system",content:systemPrompt)
