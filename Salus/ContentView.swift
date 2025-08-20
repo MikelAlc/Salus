@@ -24,6 +24,12 @@ struct ContentView: View {
     
 
     @State private var selectedTab = 0
+    
+    func speak(text: String){
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        speechSynth.speak(utterance)
+    }
 
     var body: some View {
         
@@ -79,6 +85,31 @@ struct ContentView: View {
                 Image(systemName:"bell")
                 Text("Notifs")
             }.tag(2)
+            
+            SettingsView(isTextToSpeechEnabled: $isTextToSpeechEnabled, speak: speak)
+                .tabItem{
+                    Image(systemName: "gearshape.fill")
+                    Text("Settings")
+                }.tag(3)
+        }.onChange(of: selectedTab){
+            modelView.stopSpeaking()
+            if(self.isTextToSpeechEnabled){
+                let textToSpeak: String
+                switch selectedTab{
+                case 0:
+                    textToSpeak = "Chat"
+                case 1:
+                    textToSpeak = "Stats"
+                case 2:
+                    textToSpeak = "Notifications"
+                case 3:
+                    textToSpeak = "Settings"
+                default:
+                    textToSpeak = "Oh no, something went wrong!"
+                }
+                
+                speak(text: textToSpeak)
+            }
         }
     }
 

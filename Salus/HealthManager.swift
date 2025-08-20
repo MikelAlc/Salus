@@ -8,6 +8,7 @@
 
 import Foundation
 import HealthKit
+import SwiftUI
 
 extension Date {
     static var startOfDay: Date {
@@ -34,14 +35,19 @@ class HealthManager: ObservableObject {
     init(){
         let steps = HKQuantityType(.stepCount)
         let calories = HKQuantityType(.activeEnergyBurned)
+        let distance = HKQuantityType(.distanceWalkingRunning)
         
-        let healthTypes: Set = [steps,calories]
+        let healthTypes: Set = [steps,calories,distance]
         
         Task {
             do {
                 try await healthStore.requestAuthorization(toShare: [], read: healthTypes )
+               
+                
                 fetchTodaySteps()
                 fetchTodayCalories()
+                fetchTodayDistance()
+                
             } catch {
                 print("Error Fetching Health Data")
             }
@@ -81,6 +87,26 @@ class HealthManager: ObservableObject {
                 self.activities["todayCalories"] = activity
             }
             print(caloriesBurned.formattedString())
+            
+        }
+        
+        healthStore.execute(query)
+    }
+    
+    func fetchTodayDistance(){
+        let distance = HKQuantityType(.distanceWalkingRunning)
+        let predicate = HKQuery.predicateForSamples(withStart: .startOfDay, end: Date())
+        let query = HKStatisticsQuery(quantityType: distance, quantitySamplePredicate: predicate){ _, result, error in
+            guard let quantity = result?.sumQuantity(), error == nil else {
+                print("Error Fetching Today's Distance Data:", error?.localizedDescription  ?? "Unknown Error")
+                return
+            }
+            let distanceWalked = quantity.doubleValue(for:.meterUnit(with: .kilo))
+            let activity = Activity(id: 2, title: "Distance Traveled Today", subtitle: "Goal: 5 KM", imageName: "shoeprints.fill", imageColor: .blue, amount:distanceWalked.formattedString())
+            DispatchQueue.main.async{
+                self.activities["todayDistance"] = activity
+            }
+            print(distanceWalked.formattedString())
             
         }
         
