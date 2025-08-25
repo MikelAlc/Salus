@@ -17,14 +17,29 @@ extension Date {
 }
 
 extension Double {
-    func formattedString() -> String {
+    func formattedString(maximumFractionDigits: Int = 0) -> String {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal
-        numberFormatter.maximumFractionDigits = 0
+        numberFormatter.maximumFractionDigits = maximumFractionDigits
         
         return numberFormatter.string(from: NSNumber(value:self))!
     }
 }
+
+struct ActivityConfig {
+    let id: Int
+    let title: String
+    let subtitle: String
+    let imageName: String
+    let imageColor: Color
+    let quantityType: HKQuantityType
+    let unit: HKUnit
+    let unitLabel: String
+    let errorMessage: String
+    let maximumFractionDigits: Int
+}
+
+
 
 class HealthManager: ObservableObject {
     
@@ -32,68 +47,82 @@ class HealthManager: ObservableObject {
     
     @Published var activities: [String:Activity] = [:]
     
-    init(){
-        let steps = HKQuantityType(.stepCount)
-        let calories = HKQuantityType(.activeEnergyBurned)
-        let distance = HKQuantityType(.distanceWalkingRunning)
+    private let activityConfigs: [String: ActivityConfig] = [
+        "todaySteps": ActivityConfig(
+           id: 0,
+           title: "Today's Steps",
+           subtitle: "Goal: 10,000",
+           imageName: "figure.walk",
+           imageColor: .green,
+           quantityType: HKQuantityType(.stepCount),
+           unit: .count(),
+           unitLabel: "Steps",
+           errorMessage: "Step",
+           maximumFractionDigits: 0
+        ),
+        "todayCalories": ActivityConfig(
+            id: 1,
+            title: "Calories Burned Today",
+            subtitle: "Goal: 400",
+            imageName: "flame",
+            imageColor: .orange,
+            quantityType: HKQuantityType(.activeEnergyBurned),
+            unit: .kilocalorie(),
+            unitLabel: "cal",
+            errorMessage: "Calorie",
+            maximumFractionDigits: 0
+        ),
         
-        let healthTypes: Set = [steps,calories,distance]
+        "todayDistance": ActivityConfig(
+            id: 2,
+            title: "Distance Traveled Today",
+            subtitle: "Goal: 5 KM",
+            imageName: "shoeprints.fill",
+            imageColor: .blue,
+            quantityType: HKQuantityType(.distanceWalkingRunning),
+            unit: .meterUnit(with: .kilo),
+            unitLabel: "km",
+            errorMessage: "Distance",
+            maximumFractionDigits: 2
+        )
+    ]
+    
+    init(){
+     
+        let healthTypes: Set = Set(activityConfigs.values.map{ $0.quantityType })
         
         Task {
             do {
                 try await healthStore.requestAuthorization(toShare: [], read: healthTypes )
                 
-                let stepsToday = try await fetchTodayQuantity(
-                    type: HKQuantityType(.stepCount),
-                    unit: .count(),
-                    errorMessage: "Steps"
-                )
-                
-                let caloriesToday = try await fetchTodayQuantity(
-                    type: HKQuantityType(.activeEnergyBurned),
-                    unit: .kilocalorie(),
-                    errorMessage: "Calorie"
-                )
-                
-                let distanceToday = try await fetchTodayQuantity(
-                    type: HKQuantityType(.distanceWalkingRunning),
-                    unit: .meterUnit(with: .kilo),
-                    errorMessage: "Distance"
-                )
-                
-                DispatchQueue.main.async {
-                    self.activities["todaySteps"] = Activity(
-                        id: 0,
-                        title: "Today's Steps",
-                        subtitle: "Goal: 10,000",
-                        imageName: "figure.walk",
-                        imageColor: .green,
-                        amount: stepsToday.formattedString()
-                    )
-                    
-                    self.activities["todayCalories"] = Activity(
-                        id: 1,
-                        title: "Calories Burned Today",
-                        subtitle: "Goal: 400",
-                        imageName: "flame",
-                        imageColor: .orange,
-                        amount: caloriesToday.formattedString()
-                    )
-                    
-                    self.activities["todayDistance"] = Activity(
-                        id: 2,
-                        title: "Distance Traveled Today",
-                        subtitle: "Goal: 5 KM",
-                        imageName: "shoeprints.fill",
-                        imageColor: .blue,
-                        amount: distanceToday.formattedString()
-                    )
+                for (key,config) in activityConfigs {
+                    let activity = try await fetchActivity(from:config)
+                    DispatchQueue.main.async{
+                        self.activities[key] = activity
+                    }
                 }
                 
             } catch {
                 print("Error Fetching Health Data:", error)
             }
         }
+    }
+    
+    func fetchActivity(from config: ActivityConfig) async throws -> Activity {
+        let value = try await fetchTodayQuantity(
+           type: config.quantityType,
+           unit: config.unit,
+           errorMessage: config.errorMessage
+       )
+       
+       return Activity(
+           id: config.id,
+           title: config.title,
+           subtitle: config.subtitle,
+           imageName: config.imageName,
+           imageColor: config.imageColor,
+           amount: value.formattedString(maximumFractionDigits: config.maximumFractionDigits) + " " + config.unitLabel
+       )
     }
     
     func fetchTodayQuantity(
@@ -123,3 +152,4 @@ class HealthManager: ObservableObject {
         }
     }
 }
+

@@ -18,7 +18,7 @@ struct MessageRowView: View {
         VStack(spacing:0){
             messageRow(text: message.sendText, image: message.sendImage, bgColor: Color("Background"))
             
-            if let text = message.responseText {
+            if message.responseText != nil {
                 Divider()
                 messageRow(text:message.responseText ?? "", image:message.responseImage  , bgColor:  Color("Background"), responseError: message.responseError, showDotLoading: message.isInteractingWithChatGPT)
                 Divider()
