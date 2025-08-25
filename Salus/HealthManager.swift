@@ -42,75 +42,84 @@ class HealthManager: ObservableObject {
         Task {
             do {
                 try await healthStore.requestAuthorization(toShare: [], read: healthTypes )
-               
                 
-                fetchTodaySteps()
-                fetchTodayCalories()
-                fetchTodayDistance()
+                let stepsToday = try await fetchTodayQuantity(
+                    type: HKQuantityType(.stepCount),
+                    unit: .count(),
+                    errorMessage: "Steps"
+                )
+                
+                let caloriesToday = try await fetchTodayQuantity(
+                    type: HKQuantityType(.activeEnergyBurned),
+                    unit: .kilocalorie(),
+                    errorMessage: "Calorie"
+                )
+                
+                let distanceToday = try await fetchTodayQuantity(
+                    type: HKQuantityType(.distanceWalkingRunning),
+                    unit: .meterUnit(with: .kilo),
+                    errorMessage: "Distance"
+                )
+                
+                DispatchQueue.main.async {
+                    self.activities["todaySteps"] = Activity(
+                        id: 0,
+                        title: "Today's Steps",
+                        subtitle: "Goal: 10,000",
+                        imageName: "figure.walk",
+                        imageColor: .green,
+                        amount: stepsToday.formattedString()
+                    )
+                    
+                    self.activities["todayCalories"] = Activity(
+                        id: 1,
+                        title: "Calories Burned Today",
+                        subtitle: "Goal: 400",
+                        imageName: "flame",
+                        imageColor: .orange,
+                        amount: caloriesToday.formattedString()
+                    )
+                    
+                    self.activities["todayDistance"] = Activity(
+                        id: 2,
+                        title: "Distance Traveled Today",
+                        subtitle: "Goal: 5 KM",
+                        imageName: "shoeprints.fill",
+                        imageColor: .blue,
+                        amount: distanceToday.formattedString()
+                    )
+                }
                 
             } catch {
-                print("Error Fetching Health Data")
+                print("Error Fetching Health Data:", error)
             }
         }
     }
     
-    func fetchTodaySteps(){
-        let steps = HKQuantityType(.stepCount)
-        let predicate = HKQuery.predicateForSamples(withStart: .startOfDay, end: Date())
-        let query = HKStatisticsQuery(quantityType: steps, quantitySamplePredicate: predicate) { _, result, error in
-            guard let quantity = result?.sumQuantity(), error == nil else {
-                print("Error Fetching Today's Step Data")
-                return
-            }
-            let stepCount = quantity.doubleValue(for: .count())
-            let activity = Activity(id: 0, title: "Today's Steps", subtitle: "Goal: 10,000", imageName: "figure.walk", imageColor: .green, amount:stepCount.formattedString())
-            DispatchQueue.main.async{
-                self.activities["todaySteps"] = activity
-            }
-            print(stepCount.formattedString())
-        }
-            
-        healthStore.execute(query)
-    }
-    
-    func fetchTodayCalories(){
-        let calories = HKQuantityType(.activeEnergyBurned)
-        let predicate = HKQuery.predicateForSamples(withStart: .startOfDay, end: Date())
-        let query = HKStatisticsQuery(quantityType: calories, quantitySamplePredicate: predicate){ _, result, error in
-            guard let quantity = result?.sumQuantity(), error == nil else {
-                print("Error Fetching Today's Calorie Data")
-                return
-            }
-            let caloriesBurned = quantity.doubleValue(for: .kilocalorie())
-            let activity = Activity(id: 1, title: "Calories Burned Today", subtitle: "Goal: 400", imageName: "flame", imageColor: .orange, amount:caloriesBurned.formattedString())
-            DispatchQueue.main.async{
-                self.activities["todayCalories"] = activity
-            }
-            print(caloriesBurned.formattedString())
-            
-        }
+    func fetchTodayQuantity(
+        type: HKQuantityType,
+        unit: HKUnit,
+        errorMessage: String
+    ) async throws -> Double {
         
-        healthStore.execute(query)
-    }
-    
-    func fetchTodayDistance(){
-        let distance = HKQuantityType(.distanceWalkingRunning)
-        let predicate = HKQuery.predicateForSamples(withStart: .startOfDay, end: Date())
-        let query = HKStatisticsQuery(quantityType: distance, quantitySamplePredicate: predicate){ _, result, error in
-            guard let quantity = result?.sumQuantity(), error == nil else {
-                print("Error Fetching Today's Distance Data:", error?.localizedDescription  ?? "Unknown Error")
-                return
+        try await withCheckedThrowingContinuation { continuation in
+            let predicate = HKQuery.predicateForSamples(withStart: .startOfDay,end: Date())
+            let query = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate) { _, result, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                
+                guard let quantatity = result?.sumQuantity() else {
+                    print("Error Fetching Today's \(errorMessage) Data")
+                    continuation.resume(returning: 0.0)
+                    return
+                }
+                
+                let value = quantatity.doubleValue(for: unit)
+                continuation.resume(returning: value)
             }
-            let distanceWalked = quantity.doubleValue(for:.meterUnit(with: .kilo))
-            let activity = Activity(id: 2, title: "Distance Traveled Today", subtitle: "Goal: 5 KM", imageName: "shoeprints.fill", imageColor: .blue, amount:distanceWalked.formattedString())
-            DispatchQueue.main.async{
-                self.activities["todayDistance"] = activity
-            }
-            print(distanceWalked.formattedString())
-            
+            self.healthStore.execute(query)
         }
-        
-        healthStore.execute(query)
     }
-    
 }
