@@ -21,9 +21,13 @@ struct NotificationsView: View {
                     } label: {
                         Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
                     }
+                    .listRowBackground(Color(.systemGray4))
+                    
                 }
                 .onDelete(perform: deleteItems)
             }
+            .scrollContentBackground(.hidden)
+            .background(Color("Background"))
             .toolbar {
                 ToolbarItem{
                     Button(action: scheduleNotification) {

@@ -19,7 +19,6 @@ struct StatisticsView: View {
             }
         }
         .padding(.horizontal)
-      
     }
 }
 

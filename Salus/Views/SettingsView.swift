@@ -25,11 +25,11 @@ struct SettingsView: View {
             .onChange(of: isTextToSpeechEnabled){
                 speak("Text to Speech, \(isTextToSpeechEnabled ? "Enabled" : "Disabled")")
             }.padding(.top, 50)
-            .padding()
+                .padding()
             Spacer()
-            
         }
         .background(Color("Background"))
+        
     }
 }
     
