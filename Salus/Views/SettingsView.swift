@@ -29,6 +29,7 @@ struct SettingsView: View {
             Spacer()
             
         }
+        .background(Color("Background"))
     }
 }
     

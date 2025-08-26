@@ -9,6 +9,8 @@
 import Foundation
 import HealthKit
 import SwiftUI
+import FamilyControls
+import DeviceActivity
 
 extension Date {
     static var startOfDay: Date {
@@ -39,8 +41,6 @@ struct ActivityConfig {
     let maximumFractionDigits: Int
 }
 
-
-
 class HealthManager: ObservableObject {
     
     let healthStore = HKHealthStore()
@@ -49,22 +49,22 @@ class HealthManager: ObservableObject {
     
     private let activityConfigs: [String: ActivityConfig] = [
         "todaySteps": ActivityConfig(
-           id: 0,
-           title: "Today's Steps",
-           subtitle: "Goal: 10,000",
-           imageName: "figure.walk",
-           imageColor: .green,
-           quantityType: HKQuantityType(.stepCount),
-           unit: .count(),
-           unitLabel: "Steps",
-           errorMessage: "Step",
-           maximumFractionDigits: 0
+            id: 0,
+            title: "Today's Steps",
+            subtitle: "Goal: 10,000",
+            imageName: "shoeprints.fill",
+            imageColor: .blue,
+            quantityType: HKQuantityType(.stepCount),
+            unit: .count(),
+            unitLabel: "steps",
+            errorMessage: "Step",
+            maximumFractionDigits: 0
         ),
         "todayCalories": ActivityConfig(
             id: 1,
             title: "Calories Burned Today",
             subtitle: "Goal: 400",
-            imageName: "flame",
+            imageName: "flame.fill",
             imageColor: .orange,
             quantityType: HKQuantityType(.activeEnergyBurned),
             unit: .kilocalorie(),
@@ -77,8 +77,8 @@ class HealthManager: ObservableObject {
             id: 2,
             title: "Distance Traveled Today",
             subtitle: "Goal: 5 KM",
-            imageName: "shoeprints.fill",
-            imageColor: .blue,
+            imageName: "ruler.fill",
+            imageColor: .green,
             quantityType: HKQuantityType(.distanceWalkingRunning),
             unit: .meterUnit(with: .kilo),
             unitLabel: "km",
@@ -88,7 +88,7 @@ class HealthManager: ObservableObject {
     ]
     
     init(){
-     
+        
         let healthTypes: Set = Set(activityConfigs.values.map{ $0.quantityType })
         
         Task {
@@ -100,6 +100,13 @@ class HealthManager: ObservableObject {
                     DispatchQueue.main.async{
                         self.activities[key] = activity
                     }
+                    /*
+                     if let distance = activities["todayDistance"] {
+                     if let value = Double(distance.amount) {
+                     ScreenTimeManager.shared.enforceLockIfNeeded(distance: value)
+                     }
+                     }
+                     */
                 }
                 
             } catch {
@@ -110,19 +117,19 @@ class HealthManager: ObservableObject {
     
     func fetchActivity(from config: ActivityConfig) async throws -> Activity {
         let value = try await fetchTodayQuantity(
-           type: config.quantityType,
-           unit: config.unit,
-           errorMessage: config.errorMessage
-       )
-       
-       return Activity(
-           id: config.id,
-           title: config.title,
-           subtitle: config.subtitle,
-           imageName: config.imageName,
-           imageColor: config.imageColor,
-           amount: value.formattedString(maximumFractionDigits: config.maximumFractionDigits) + " " + config.unitLabel
-       )
+            type: config.quantityType,
+            unit: config.unit,
+            errorMessage: config.errorMessage
+        )
+        
+        return Activity(
+            id: config.id,
+            title: config.title,
+            subtitle: config.subtitle,
+            imageName: config.imageName,
+            imageColor: config.imageColor,
+            amount: value.formattedString(maximumFractionDigits: config.maximumFractionDigits) + " " + config.unitLabel
+        )
     }
     
     func fetchTodayQuantity(
@@ -152,4 +159,3 @@ class HealthManager: ObservableObject {
         }
     }
 }
-
