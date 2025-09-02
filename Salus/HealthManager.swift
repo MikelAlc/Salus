@@ -41,6 +41,7 @@ struct ActivityConfig {
     let maximumFractionDigits: Int
 }
 
+@MainActor
 class HealthManager: ObservableObject {
     
     let healthStore = HKHealthStore()
@@ -51,7 +52,7 @@ class HealthManager: ObservableObject {
         "todaySteps": ActivityConfig(
             id: 0,
             title: "Today's Steps",
-            subtitle: "Goal: 10,000",
+            subtitle: "Goal: 8,000",
             imageName: "shoeprints.fill",
             imageColor: .blue,
             quantityType: HKQuantityType(.stepCount),
@@ -63,7 +64,7 @@ class HealthManager: ObservableObject {
         "todayCalories": ActivityConfig(
             id: 1,
             title: "Calories Burned Today",
-            subtitle: "Goal: 400",
+            subtitle: "Goal: 175",
             imageName: "flame.fill",
             imageColor: .orange,
             quantityType: HKQuantityType(.activeEnergyBurned),
@@ -84,10 +85,11 @@ class HealthManager: ObservableObject {
             unitLabel: "km",
             errorMessage: "Distance",
             maximumFractionDigits: 2
-        )
+        ),
     ]
     
     init(){
+        
         
         let healthTypes: Set = Set(activityConfigs.values.map{ $0.quantityType })
         
@@ -97,22 +99,76 @@ class HealthManager: ObservableObject {
                 
                 for (key,config) in activityConfigs {
                     let activity = try await fetchActivity(from:config)
+                    
                     DispatchQueue.main.async{
                         self.activities[key] = activity
+                        self.setStreakActivity(for: key)
                     }
-                    /*
-                     if let distance = activities["todayDistance"] {
-                     if let value = Double(distance.amount) {
-                     ScreenTimeManager.shared.enforceLockIfNeeded(distance: value)
-                     }
-                     }
-                     */
                 }
+          
                 
             } catch {
                 print("Error Fetching Health Data:", error)
             }
         }
+    }
+    
+    func setStreakActivity(for key: String) {
+        guard key == "todayDistance", let distanceActivity = activities[key] else {
+            return
+        }
+        
+        let numericPart = distanceActivity.amount.split(separator: " ").first ?? "0"
+        
+        guard let amount = Double(numericPart) else {
+            return
+        }
+        
+        if amount < 1.85 {
+            return
+        }
+
+        var streakCount = UserDefaults.standard.integer(forKey: "streakCount")
+        let lastStreakDate : Date? = UserDefaults.standard.object(forKey: "lastStreakDate") as? Date
+        
+        if lastStreakDate != nil {
+            let lastSteakDateStart = Calendar.current.startOfDay(for: lastStreakDate!)
+            let difference = Calendar.current.dateComponents([.day], from: lastSteakDateStart, to: .startOfDay).day ?? 0
+            
+            if difference == 1 {
+                streakCount += 1
+            } else if difference > 1 {
+                streakCount = 1
+            }
+            
+        } else {
+            streakCount = 1
+        }
+        
+        let streakActivity = fetchStreakActivity(streakCount)
+        activities["streaks"] = streakActivity
+            
+        UserDefaults.standard.set(streakCount, forKey: "streakCount")
+        UserDefaults.standard.set(Date.startOfDay, forKey: "lastStreakDate")
+        
+    }
+    
+    func setStreakData() {
+        
+    }
+    
+    func fetchStreakActivity(_ streakCount: Int) -> Activity {
+        let streakText: String = String(repeating: "🔥", count: streakCount)
+        print(streakText)
+        
+        return Activity (
+            id: 4,
+            title: "Streaks",
+            subtitle: "Goal: 5 days in a row",
+            imageName: "star.fill",
+            imageColor: .yellow,
+            amount: streakText
+        )
     }
     
     func fetchActivity(from config: ActivityConfig) async throws -> Activity {
