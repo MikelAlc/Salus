@@ -19,11 +19,6 @@ struct ContentView: View {
     
     //StatsView
     @EnvironmentObject var healthManager: HealthManager
-   
-    
-    //ScreenTimeView
-    @EnvironmentObject var screenTimeManager: ScreenTimeManager
-    
     
     @State private var selectedTab = 0
     
@@ -42,7 +37,7 @@ struct ContentView: View {
                 .tabItem(){
                     Image(systemName: "ellipsis.message.fill")
                     Text("Chat")
-                }.tag(0)
+                }.tag("Chat")
             
             StatisticsView()
                 .tabItem {

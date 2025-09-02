@@ -23,13 +23,13 @@ struct SalusApp: App {
         }
     }()
     
-    @State var manager = HealthManager()
+    @State var healthManager = HealthManager()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
         .modelContainer(sharedModelContainer)
-        .environmentObject(manager)
+        .environmentObject(healthManager)
     }
 }
